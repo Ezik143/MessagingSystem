@@ -15,7 +15,7 @@ namespace MessagingSystem.Models.Entities
         public DateTime CreatedAt { get; set; }
 
         public User Creator { get; set; } = null!;
-        public ICollection<Message> Messages = new List<Message>();
-        public ICollection<ChatParticipant> Participants = new List<ChatParticipant>();
+        public ICollection<Message> Messages { get; set; } = new List<Message>();
+        public ICollection<ChatParticipant> Participants { get; set; } = new List<ChatParticipant>();
     }
 }

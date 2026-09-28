@@ -3,6 +3,7 @@ using System;
 using MessagingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MessagingSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260928180556_FixUserRelationships")]
+    partial class FixUserRelationships
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,6 +64,9 @@ namespace MessagingSystem.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("CreatorId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -69,7 +75,7 @@ namespace MessagingSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedBy");
+                    b.HasIndex("CreatorId");
 
                     b.ToTable("Chats");
                 });
@@ -153,8 +159,6 @@ namespace MessagingSystem.Migrations
 
                     b.HasKey("MessageId", "UserId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("ReadReceipts");
                 });
 
@@ -197,8 +201,8 @@ namespace MessagingSystem.Migrations
                 {
                     b.HasOne("MessagingSystem.Models.Entities.User", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Creator");
@@ -207,7 +211,7 @@ namespace MessagingSystem.Migrations
             modelBuilder.Entity("MessagingSystem.Models.Entities.ChatParticipant", b =>
                 {
                     b.HasOne("MessagingSystem.Models.Entities.Chat", "Chat")
-                        .WithMany("Participants")
+                        .WithMany()
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -215,7 +219,7 @@ namespace MessagingSystem.Migrations
                     b.HasOne("MessagingSystem.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Chat");
@@ -226,52 +230,35 @@ namespace MessagingSystem.Migrations
             modelBuilder.Entity("MessagingSystem.Models.Entities.Message", b =>
                 {
                     b.HasOne("MessagingSystem.Models.Entities.Chat", "Chat")
-                        .WithMany("Messages")
+                        .WithMany()
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MessagingSystem.Models.Entities.Message", "ReplyTo")
+                    b.HasOne("MessagingSystem.Models.Entities.Message", "Replyto")
                         .WithMany("Replies")
                         .HasForeignKey("ReplyToId");
 
                     b.HasOne("MessagingSystem.Models.Entities.User", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Chat");
 
-                    b.Navigation("ReplyTo");
+                    b.Navigation("Replyto");
 
                     b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("MessagingSystem.Models.Entities.ReadReceipt", b =>
                 {
-                    b.HasOne("MessagingSystem.Models.Entities.Message", "Message")
+                    b.HasOne("MessagingSystem.Models.Entities.Message", null)
                         .WithMany("ReadReceipts")
                         .HasForeignKey("MessageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("MessagingSystem.Models.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Message");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MessagingSystem.Models.Entities.Chat", b =>
-                {
-                    b.Navigation("Messages");
-
-                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("MessagingSystem.Models.Entities.Message", b =>

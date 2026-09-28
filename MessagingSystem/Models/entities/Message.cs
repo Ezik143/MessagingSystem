@@ -20,7 +20,7 @@ namespace MessagingSystem.Models.Entities
 
         public Chat Chat { get; set; } = null!;
         public User Sender { get; set; } = null!;
-        public Message? Replyto { get; set; }
+        public Message? ReplyTo { get; set; }
 
         public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
         public ICollection<ReadReceipt> ReadReceipts { get; set; } = new List<ReadReceipt>();
