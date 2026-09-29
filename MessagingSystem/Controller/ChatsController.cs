@@ -49,8 +49,8 @@ namespace MessagingSystem.Controller
 
         [HttpPost("direct")]
         public async Task<ActionResult<ChatResponse>> CreateDirectChat(
-            [FromQuery] Guid creatorId,
-                [FromBody] CreateDirectChatRequest request)
+            Guid creatorId,
+            CreateDirectChatRequest request)
         {
             if (creatorId == request.OtherUserId)
             {

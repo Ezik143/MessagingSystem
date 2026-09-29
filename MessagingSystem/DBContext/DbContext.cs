@@ -69,6 +69,10 @@ namespace MessagingSystem.Data
                 .WithMany()
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<User>()
+.HasIndex(user => user.FirebaseUid)
+.IsUnique();
         }
     }
 }
