@@ -27,30 +27,48 @@ namespace MessagingSystem.Data
 
             modelBuilder.Entity<ReadReceipt>().HasKey(r => new { r.MessageId, r.UserId });
 
-            //Entity Framework Core Relationships / Relationship Configuration
+            // Entity Framework Core relationships
             modelBuilder.Entity<Chat>()
-            .HasOne(c => c.Messages)
-            .WithMany()
-            .HasForeignKey(c => c.CreatedBy)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(c => c.Creator)
+                .WithMany()
+                .HasForeignKey(c => c.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Chat>()
+                .HasMany(c => c.Messages)
+                .WithOne(m => m.Chat)
+                .HasForeignKey(m => m.ChatId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Chat>()
+                .HasMany(c => c.Participants)
+                .WithOne(cp => cp.Chat)
+                .HasForeignKey(cp => cp.ChatId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Message>()
-            .HasOne(m => m.Sender)
-            .WithMany()
-            .HasForeignKey(s => s.SenderId)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ChatParticipant>()
-            .HasOne(c => c.User)
-            .WithMany()
-            .HasForeignKey(cp => cp.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(cp => cp.User)
+                .WithMany()
+                .HasForeignKey(cp => cp.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ReadReceipt>()
-            .HasOne(m => m.Message)
-            .WithMany()
-            .HasForeignKey(u => u.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(r => r.Message)
+                .WithMany(m => m.ReadReceipts)
+                .HasForeignKey(r => r.MessageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ReadReceipt>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
